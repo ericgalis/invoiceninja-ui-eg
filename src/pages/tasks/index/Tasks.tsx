@@ -33,6 +33,7 @@ import {
   ChangeTemplateModal,
   useChangeTemplate,
 } from '$app/pages/settings/invoice-design/pages/custom-designs/components/ChangeTemplate';
+import { ClockifyImportModal } from '../common/components/ClockifyImportModal';
 import { ExtensionBanner } from '../common/components/ExtensionBanner';
 import {
   TaskSlider,
@@ -68,6 +69,7 @@ export default function Tasks() {
   const filterColumns = useFilterColumns();
   const customBulkActions = useCustomBulkActions();
 
+  const [clockifyImportVisible, setClockifyImportVisible] = useState(false);
   const [taskSlider, setTaskSlider] = useAtom(taskSliderAtom);
   const [sliderTaskId, setSliderTaskId] = useState<string>('');
   const [dateRangeEntries, setDateRangeEntries] = useAtom(dateRangeAtom);
@@ -162,6 +164,20 @@ export default function Tasks() {
 
             <Guard
               type="component"
+              component={
+                <Button
+                  type="secondary"
+                  behavior="button"
+                  onClick={() => setClockifyImportVisible(true)}
+                >
+                  Import from Clockify
+                </Button>
+              }
+              guards={[permission('create_task')]}
+            />
+
+            <Guard
+              type="component"
               component={<ImportButton route="/tasks/import" />}
               guards={[or(permission('create_task'), permission('edit_task'))]}
             />
@@ -188,6 +204,11 @@ export default function Tasks() {
       />
 
       {!disableNavigation('task', taskSlider) && <TaskSlider />}
+
+      <ClockifyImportModal
+        visible={clockifyImportVisible}
+        setVisible={setClockifyImportVisible}
+      />
 
       <ChangeTemplateModal<Task>
         entity="task"
